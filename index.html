@@ -1,174 +1,223 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clima e Qualidade do Ar no Parque</title>
+    <title>Monitoramento Climático - Parque de Realengo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f1f5f9;
-            color: #333;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #74C69D 0%, #2E8B57 100%);
             margin: 0;
-            padding: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #2E8B57;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 2.5em;
+        }
+
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .sensor {
+            background: linear-gradient(145deg, #F8F9FA, #E9ECEF);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             text-align: center;
         }
-        header {
-            background: #2563eb;
-            color: white;
-            padding: 20px;
-            font-size: 22px;
-            font-weight: bold;
+
+        .sensor:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
-        .container {
-            padding: 20px;
+
+        .sensor h2 {
+            margin-top: 0;
+            color: #2E8B57;
+            font-weight: 500;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .sensor-box {
-            background: white;
-            padding: 20px;
-            margin: 15px auto;
-            width: 85%;
-            max-width: 400px;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            font-size: 18px;
-        }
-        .recommendation {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 12px;
-            width: 85%;
-            max-width: 450px;
-            margin-left: auto;
-            margin-right: auto;
-            font-size: 18px;
-            color: white;
-        }
-        .good {
-            background: #16a34a;
-        }
-        .warning {
-            background: #dc2626;
-        }
-        .rec-icon {
-            font-size: 26px;
+
+        .sensor-icon {
             margin-right: 10px;
+            font-size: 1.5em;
         }
-        footer {
-            background: #1e3a8a;
-            color: white;
-            padding: 10px;
-            margin-top: 30px;
+
+        .sensor p {
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .value {
+            font-weight: 700;
+            color: #007BFF;
+            font-size: 1.3em;
+        }
+
+        .recommendation {
+            padding: 20px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 1.2em;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recommendation p {
+            margin: 0;
+        }
+
+        .good {
+            background: linear-gradient(145deg, #d4edda, #c3e6cb);
+            border-left: 5px solid #28a745;
+            color: #155724;
+        }
+
+        .warning {
+            background: linear-gradient(145deg, #f8d7da, #f5c6cb);
+            border-left: 5px solid #dc3545;
+            color: #721c24;
+        }
+
+        .rec-icon {
+            margin-right: 10px;
+            font-size: 1.5em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .sensors-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 
 <body>
-
-<header>
-    Monitoramento do Parque — Clima e Qualidade do Ar
-</header>
-
-<div class="container">
-
-    <div class="sensor-box">
-        🌡️ <strong>Temperatura:</strong> <span id="temp-value">--</span> °C
+    <div class="container">
+        <h1>🌳 Monitoramento Climático - Parque de Realengo</h1>
+        <p class="description">Monitore o clima e a qualidade do ar no Parque de Realengo, um espaço verde urbano no Rio de Janeiro. Dados em tempo real dos sensores ajudam a preservar a fauna e flora local.</p>
+        
+        <div class="sensors-grid">
+            <div class="sensor" id="uv-sensor">
+                <h2><span class="sensor-icon">☀️</span> Sensor de UV</h2>
+                <p>Índice UV: <span class="value" id="uv-value">--</span></p>
+            </div>
+            
+            <div class="sensor" id="air-sensor">
+                <h2><span class="sensor-icon">🌫️</span> Sensor MQ-135 (Qualidade do Ar)</h2>
+                <p>Nível de Poluentes: <span class="value" id="air-value">--</span> ppm</p>
+            </div>
+            
+            <div class="sensor" id="rain-sensor">
+                <h2><span class="sensor-icon">🌧️</span> Sensor de Chuva</h2>
+                <p>Status: <span class="value" id="rain-value">--</span></p>
+            </div>
+            
+            <div class="sensor" id="dht-sensor">
+                <h2><span class="sensor-icon">🌡️</span> Sensor DHT11 (Temperatura e Umidade)</h2>
+                <p>Temperatura: <span class="value" id="temp-value">--</span> °C</p>
+                <p>Umidade: <span class="value" id="hum-value">--</span> %</p>
+            </div>
+        </div>
+        
+        <div class="recommendation" id="recommendation">
+            <p><span class="rec-icon">⏳</span> Carregando recomendações...</p>
+        </div>
     </div>
 
-    <div class="sensor-box">
-        💧 <strong>Umidade:</strong> <span id="hum-value">--</span> %
-    </div>
-
-    <div class="sensor-box">
-        ☀️ <strong>Índice UV:</strong> <span id="uv-value">--</span>
-    </div>
-
-    <div class="sensor-box">
-        🌫️ <strong>Qualidade do Ar (MQ135):</strong> <span id="air-value">--</span>
-    </div>
-
-    <div class="sensor-box">
-        🌧️ <strong>Chuva:</strong> <span id="rain-value">--</span>
-    </div>
-
-    <div id="recommendation" class="recommendation good">
-        <p><span class="rec-icon">🌿</span> Carregando informações...</p>
-    </div>
-
-</div>
-
-<footer>
-    Sistema de Monitoramento — Desenvolvido pelo Rafa 😎
-</footer>
-
-
-<!-- ================== JAVASCRIPT COM THINGSPEAK ================== -->
-
-<script>
-    const channelID = 3172465;
-    const readAPIKey = "XKB8931BGHSD7SRX";
-
-    async function updateSensors() {
-        try {
-            const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${readAPIKey}&results=1`;
-            const response = await fetch(url);
-            const json = await response.json();
-
-            if (!json.feeds || json.feeds.length === 0) {
-                throw new Error("Nenhum dado encontrado");
+    <script>
+        async function updateSensors() {
+            try {
+                const response = await fetch('/data');
+                if (!response.ok) throw new Error('Erro ao obter dados');
+                const data = await response.json();
+                
+                document.getElementById('uv-value').textContent = data.uv || '--';
+                document.getElementById('air-value').textContent = data.air || '--';
+                document.getElementById('rain-value').textContent = data.rain || '--';
+                document.getElementById('temp-value').textContent = data.temp || '--';
+                document.getElementById('hum-value').textContent = data.hum || '--';
+                
+                let message = "";
+                let className = "";
+                let icon = "";
+                
+                if (data.rain === "Chovendo") {
+                    message = "Cuidado chuva! Procure local adequado.";
+                    className = "warning";
+                    icon = "🌧️";
+                } else if (data.air > 200) {
+                    message = "Qualidade do ar ruim! Crianças e idosos evitem esforço.";
+                    className = "warning";
+                    icon = "🌫️";
+                } else if (data.uv > 7) {
+                    message = "Índice UV alto, use protetor solar!";
+                    className = "warning";
+                    icon = "☀️";
+                } else {
+                    message = "Condições ótimas para atividades ao ar livre!";
+                    className = "good";
+                    icon = "✅";
+                }
+                
+                const recDiv = document.getElementById('recommendation');
+                recDiv.innerHTML = `<p><span class="rec-icon">${icon}</span> ${message}</p>`;
+                recDiv.className = `recommendation ${className}`;
+            } catch (error) {
+                console.error('Erro ao atualizar sensores:', error);
+                document.getElementById('recommendation').innerHTML = '<p><span class="rec-icon">❌</span> Erro ao carregar dados.</p>';
             }
-
-            const data = json.feeds[0];
-
-            const uv = parseFloat(data.field3) || 0;
-            const air = parseFloat(data.field4) || 0;
-            const rain = parseInt(data.field5) === 1 ? "Chovendo" : "Sem chuva";
-            const temp = parseFloat(data.field1) || 0;
-            const hum = parseFloat(data.field2) || 0;
-
-            document.getElementById('uv-value').textContent = uv;
-            document.getElementById('air-value').textContent = air;
-            document.getElementById('rain-value').textContent = rain;
-            document.getElementById('temp-value').textContent = temp;
-            document.getElementById('hum-value').textContent = hum;
-
-            // Recomendações
-            let message = "";
-            let className = "";
-            let icon = "";
-
-            if (rain === "Chovendo") {
-                message = "Cuidado! Está chovendo no parque.";
-                className = "warning";
-                icon = "🌧️";
-            } else if (air > 200) {
-                message = "Qualidade do ar ruim! Evite esforços físicos.";
-                className = "warning";
-                icon = "🌫️";
-            } else if (uv > 7) {
-                message = "Índice UV alto! Use protetor solar.";
-                className = "warning";
-                icon = "☀️";
-            } else {
-                message = "Condições ótimas para aproveitar o parque!";
-                className = "good";
-                icon = "🌿";
-            }
-
-            const recDiv = document.getElementById('recommendation');
-            recDiv.innerHTML = `<p><span class="rec-icon">${icon}</span> ${message}</p>`;
-            recDiv.className = `recommendation ${className}`;
-
-        } catch (error) {
-            console.log("Erro:", error);
-            document.getElementById('recommendation').innerHTML =
-                '<p><span class="rec-icon">❌</span> Erro ao carregar dados.</p>';
         }
-    }
-
-    setInterval(updateSensors, 5000);
-    updateSensors();
-</script>
-
+        
+        setInterval(updateSensors, 5000);
+        updateSensors();
+    </script>
 </body>
 </html>
