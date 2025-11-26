@@ -173,31 +173,47 @@
     </div>
 
     <script>
+        const channelID = 3172465;
+        const readAPI = "XKB8931BGHSD7SRX";
+
         async function updateSensors() {
             try {
-                const response = await fetch('/data');
-                if (!response.ok) throw new Error('Erro ao obter dados');
-                const data = await response.json();
-                
-                document.getElementById('uv-value').textContent = data.uv || '--';
-                document.getElementById('air-value').textContent = data.air || '--';
-                document.getElementById('rain-value').textContent = data.rain || '--';
-                document.getElementById('temp-value').textContent = data.temp || '--';
-                document.getElementById('hum-value').textContent = data.hum || '--';
-                
+                const url = `https://api.thingspeak.com/channels/${channelID}/feeds.json?api_key=${readAPI}&results=1`;
+                const response = await fetch(url);
+                const json = await response.json();
+
+                if (!json.feeds.length) return;
+
+                const feed = json.feeds[0];
+
+                // Pegando valores do ThingSpeak
+                const uv   = feed.field5 || "--";
+                const air  = feed.field4 || "--";
+                const rain = feed.field3 == "1" ? "Chovendo" : "Sem chuva";
+                const temp = feed.field1 || "--";
+                const hum  = feed.field2 || "--";
+
+                // Colocando no HTML
+                document.getElementById("uv-value").textContent   = uv;
+                document.getElementById("air-value").textContent  = air;
+                document.getElementById("rain-value").textContent = rain;
+                document.getElementById("temp-value").textContent = temp;
+                document.getElementById("hum-value").textContent  = hum;
+
+                // Recomendação automática
                 let message = "";
                 let className = "";
                 let icon = "";
-                
-                if (data.rain === "Chovendo") {
+
+                if (rain === "Chovendo") {
                     message = "Cuidado chuva! Procure local adequado.";
                     className = "warning";
                     icon = "🌧️";
-                } else if (data.air > 200) {
+                } else if (air > 200) {
                     message = "Qualidade do ar ruim! Crianças e idosos evitem esforço.";
                     className = "warning";
                     icon = "🌫️";
-                } else if (data.uv > 7) {
+                } else if (uv > 7) {
                     message = "Índice UV alto, use protetor solar!";
                     className = "warning";
                     icon = "☀️";
@@ -206,17 +222,19 @@
                     className = "good";
                     icon = "✅";
                 }
-                
-                const recDiv = document.getElementById('recommendation');
+
+                const recDiv = document.getElementById("recommendation");
                 recDiv.innerHTML = `<p><span class="rec-icon">${icon}</span> ${message}</p>`;
                 recDiv.className = `recommendation ${className}`;
+
             } catch (error) {
-                console.error('Erro ao atualizar sensores:', error);
-                document.getElementById('recommendation').innerHTML = '<p><span class="rec-icon">❌</span> Erro ao carregar dados.</p>';
+                console.error("Erro ao buscar dados:", error);
+                document.getElementById("recommendation").innerHTML =
+                    '<p><span class="rec-icon">❌</span> Erro ao carregar dados.</p>';
             }
         }
-        
-        setInterval(updateSensors, 5000);
+
+        setInterval(updateSensors, 15000);
         updateSensors();
     </script>
 </body>
